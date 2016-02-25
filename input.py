@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+#Filename:input.py
 name=raw_input('Please input your name,I will remember it,just here:')
 name=name.strip()
 name=name.title()

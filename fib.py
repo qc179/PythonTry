@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-#Filename:fib.py
+#Filename:Fibonacci.py
 def fib1(n):
 	"""Return a list containing the Fibonacci series up to n."""
 	c=[]
@@ -20,7 +20,7 @@ def fib2(n):
 	return c
 
 while 2>1:
-	choose=raw_input('选择一种方式:f1 or f2.按n退出:')
+	choose=raw_input('请选择一种方式来生成斐波那契数列:f1 or f2.按n退出:')
 	if choose=='f1':
 		n=int(raw_input('请输入数列的上限:'))
 		print fib1(n)
