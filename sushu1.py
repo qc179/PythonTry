@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-#Filename:sushu.py
+#Filename:sushu1.py
 
 n=int(raw_input('请输入一个数作为N，将生成0-N间的素数：'))+1
 slist=[]
