@@ -31,7 +31,7 @@ def S2(n):
       blank.insert(-1,i)
 # print blank
   while len(blank) != 1:
-    word.append(n[blank[0]:blank[1]].lstrip())
+    word.append(n[blank[0]:blank[1]].strip())
     del blank[0]
   for w in word:
     if w in worded:
