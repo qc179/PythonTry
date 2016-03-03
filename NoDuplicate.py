@@ -3,21 +3,16 @@
 
 #A function to delete duplicate words in a string
 
-str=raw_input('enter a string in english :')
-wordidx=[]
-wordlist=[]
-for i in range(len(str)):
-  if str[i].isalpha() :
-    wordidx.append(i)
-    continue
-  if len(wordidx)==0 :
-    continue
-  else:
-    if wordidx[0]==wordidx[-1] :
-      wordlist.append(str[wordidx[0]])
-    else:
-      wordlist.append(str[wordidx[0]:wordidx[-1]])
-    del wordidx[:]
-    continue
+text=raw_input('enter something :')
 
-print wordlist
+wordlist=text.split()
+wordlist=set(wordlist)
+f=open('nodup','w')
+for w in wordlist:
+    f.write(w+'\n')
+f.close()
+
+f=open('nodup','r')
+p=f.read()
+print p
+f.close()
