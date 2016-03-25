@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-
 #Filename:sushu1.py
 
-n=int(raw_input('请输入一个数作为N，将生成0-N间的素数：'))+1
-slist=[]
-for i in range(2,n):
-  for num in range(2,i+1):
-    if i % num == 0 and i != num:
-      break
-    if i % num !=0:
-      continue
-    slist.append(i)
+def prime_num():
+    n=int(raw_input('请输入一个数作为N，将生成0-N间的素数：'))+1
+    slist=[]
+    for i in range(2,n):
+        for num in range(2,i+1):
+            if i % num == 0 and i != num:
+                break
+            if i % num !=0:
+                continue
+            slist.append(i)
+    return slist
 
-print slist
+if __name__=='__main__':
+    a=prime_num()
+    print a
+
 #整除且两数不相等，跳出
 #不整除则返回继续下一轮循环
 #continue是为了返回继续遍历其他的num
