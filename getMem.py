@@ -13,7 +13,7 @@ def getMem():
         cache = int(f.readline().split()[1])
     mem_use=total-free-buffers-cache
     with open ('/var/tmp/mem.log','a')as l:
-        l.write(time.asctime(time.localtime(time.time()))+'\n')
+        l.write(time.ctime()+'\n')
         l.write('Total: '+str(total/1024)+' MB\n')
         l.write('Free: '+str(free/1024)+' MB\n')
         l.write('Buffers: '+str(buffers/1024)+' MB\n')
