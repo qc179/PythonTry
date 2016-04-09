@@ -19,7 +19,6 @@ else:
 time.sleep(1)
 
 print '\nChecking module xlwt ..'
-os.chdir('../')
 
 try:
     import xlwt
