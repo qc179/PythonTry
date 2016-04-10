@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-#filename:xls.py
+#filename:checkboard.py
 
 import xlrd
 import xlwt
@@ -8,7 +8,7 @@ import psycopg2 as pg2
 import csv
 
 #get board source from sheet1
-board = xlrd.open_workbook('aaa.xls')
+board = xlrd.open_workbook('board.xls')
 bsheet1 = board.sheets()[0]
 srclist = []
 for row in range(bsheet1.nrows)[1:]:
