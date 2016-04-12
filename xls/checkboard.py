@@ -18,8 +18,8 @@ for row in range(bsheet1.nrows)[1:]:
     srclist.append(values)
 
 #connect database
-conn = pg2.connect(database='forummon',user='qiuchen',password='qiuchen'\
-    ,host='192.168.1.35',port='5432')
+conn = pg2.connect(database='yun',user='qiuchen',password='123456'\
+    ,host='192.168.2.128',port='5432')
 cur = conn.cursor()
 
 #init save.xls , insert title
@@ -30,31 +30,37 @@ isheet1.write(0,1,'Name')
 isheet1.write(0,2,'Url')
 isheet1.write(0,3,'Bid')
 isheet1.write(0,4,'Status')
+isheet1.write(0,5,'Count')
+isheet1.col(2).width = 256*50
+isheet1.col(1).width = 256*15
 
 #judge each source whether has been inserted , then save it
 rows = 1
 for eachsrc in srclist:
-    #eachsrc[0]:name
-    #eachsrc[1]:url
+    #eachsrc[0]:board name
+    #eachsrc[1]:board url
     select = "select fid,name,url,bid from board where is_active=1 \
-    and name~'"+eachsrc[0]+"'"
+    and name~'"+eachsrc[0]+"' and url='"+eachsrc[1]+"' order by bid"
     cur.execute(select)
     anslist = cur.fetchall()
     #anslist:a list of select results    
     if len(anslist) == 0:
-        isheet1.write(rows,0,'NONE')
+        #isheet1.write(rows,0,'NONE')
         isheet1.write(rows,1,eachsrc[0])
         isheet1.write(rows,2,eachsrc[1])
-        isheet1.write(rows,4,'NONE')
+        # isheet1.write(rows,3,'NONE')
+        # isheet1.write(rows,4,'NONE')
+        isheet1.write(rows,5,len(anslist))
         rows = rows+1
-    else:    
-        for ans in anslist:
-            isheet1.write(rows,0,ans[0])
-            isheet1.write(rows,1,ans[1])
-            isheet1.write(rows,2,ans[2])
-            isheet1.write(rows,3,ans[3])
-            isheet1.write(rows,4,'OK')
-            rows = rows+1
+    else:
+        ans = anslist[0]
+        isheet1.write(rows,0,ans[0])
+        isheet1.write(rows,1,ans[1])
+        isheet1.write(rows,2,ans[2])
+        isheet1.write(rows,3,ans[3])
+        isheet1.write(rows,4,'OK')
+        isheet1.write(rows,5,len(anslist))
+        rows = rows+1
 
 initsave.save('save.xls')
 
