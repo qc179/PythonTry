@@ -2,10 +2,15 @@
 #-*- coding: utf-8 -*-
 #filename:checkboard.py
 
+import sys
+sys.path.append('mod')
 import xlrd
 import xlwt
 import psycopg2 as pg2
 import csv
+import getcfg
+
+cfg = getcfg.getcfg('checkboard.cfg')
 
 #get board source from sheet1
 board = xlrd.open_workbook('board.xls')
@@ -18,11 +23,22 @@ for row in range(bsheet1.nrows)[1:]:
     srclist.append(values)
 
 #connect database
-conn = pg2.connect(database='yun',user='qiuchen',password='123456'\
-    ,host='192.168.2.128',port='5432')
-cur = conn.cursor()
+try:
+    conn = pg2.connect(
+    database=cfg['database'],
+    user=cfg['user'],
+    password=cfg['password'],
+    host=cfg['host'],
+    port=cfg['port']
+    )
+    cur = conn.cursor()
+except Exception,e:
+    print e
+    print 'Please check your database config <checkboard.cfg>.'
+    anyenter = raw_input('press Enter to quit.')
 
-#init save.xls , insert title
+
+#init save.xls such as title and column width
 initsave = xlwt.Workbook(encoding='utf-8')
 isheet1 = initsave.add_sheet('sheet1')
 isheet1.write(0,0,'Fid')
@@ -35,13 +51,15 @@ isheet1.col(2).width = 256*50
 isheet1.col(1).width = 256*15
 
 #judge each source whether has been inserted , then save it
+print 'There are {} boards need to be checked ..'.format(len(srclist))
+print '*'*75
 rows = 1
 for eachsrc in srclist:
     #eachsrc[0]:board name
     #eachsrc[1]:board url
-    select = "select fid,name,url,bid from board where is_active=1 \
+    sql0 = "select fid,name,url,bid from board where is_active=1 \
     and name~'"+eachsrc[0]+"' and url='"+eachsrc[1]+"' order by bid"
-    cur.execute(select)
+    cur.execute(sql0)
     anslist = cur.fetchall()
     #anslist:a list of select results    
     if len(anslist) == 0:
@@ -49,8 +67,9 @@ for eachsrc in srclist:
         isheet1.write(rows,1,eachsrc[0])
         isheet1.write(rows,2,eachsrc[1])
         # isheet1.write(rows,3,'NONE')
-        # isheet1.write(rows,4,'NONE')
+        isheet1.write(rows,4,'未配置')
         isheet1.write(rows,5,len(anslist))
+        print 'complete {}/{}.'.format(rows,len(srclist))
         rows = rows+1
     else:
         ans = anslist[0]
@@ -60,6 +79,7 @@ for eachsrc in srclist:
         isheet1.write(rows,3,ans[3])
         isheet1.write(rows,4,'OK')
         isheet1.write(rows,5,len(anslist))
+        print 'complete {}/{}.'.format(rows,len(srclist))
         rows = rows+1
 
 initsave.save('save.xls')
@@ -72,5 +92,5 @@ initsave.save('save.xls')
 
 conn.commit()
 conn.close()
-
-anyenter = raw_input('press Enter to quit.')
+print '*'*75
+anyenter = raw_input('Check result has been saved,press Enter to quit.')
