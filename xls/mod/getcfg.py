@@ -16,5 +16,5 @@ def getcfg(filename):
     return a
 
 if __name__ == '__main__':
-    a = getlogin('checkboard.cfg')
+    a = getcfg('checkboard.cfg')
     print a
