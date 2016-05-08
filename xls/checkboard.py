@@ -7,12 +7,11 @@ sys.path.append('mod')
 import xlrd
 import xlwt
 import psycopg2 as pg2
-import csv
 import getcfg
 
 cfg = getcfg.getcfg('checkboard.cfg')
 
-#get board source from sheet1
+#make board source into a list from sheet1
 board = xlrd.open_workbook('board.xls')
 bsheet1 = board.sheets()[0]
 srclist = []
@@ -22,7 +21,7 @@ for row in range(bsheet1.nrows)[1:]:
         values.append(bsheet1.cell(row,col).value)
     srclist.append(values)
 
-#connect database
+#try connect database
 try:
     conn = pg2.connect(
     database=cfg['database'],
@@ -31,14 +30,15 @@ try:
     host=cfg['host'],
     port=cfg['port']
     )
-    cur = conn.cursor()
 except Exception,e:
-    print e
-    print 'Please check your database config <checkboard.cfg>.'
-    anyenter = raw_input('press Enter to quit.')
+    #print e
+    print 'Connect server failed.'
+    anyenter = raw_input('Press ENTER to quit.')
 
+#make cursor of connection 'conn'
+cur = conn.cursor()
 
-#init save.xls such as title and column width
+#init result.xls such as title and column width
 initsave = xlwt.Workbook(encoding='utf-8')
 isheet1 = initsave.add_sheet('sheet1')
 isheet1.write(0,0,'Fid')
@@ -52,7 +52,7 @@ isheet1.col(1).width = 256*15
 
 #judge each source whether has been inserted , then save it
 print 'There are {} boards need to be checked ..'.format(len(srclist))
-print '*'*75
+print '*'*78
 rows = 1
 for eachsrc in srclist:
     #eachsrc[0]:board name
@@ -82,7 +82,7 @@ for eachsrc in srclist:
         print 'complete {}/{}.'.format(rows,len(srclist))
         rows = rows+1
 
-initsave.save('save.xls')
+initsave.save('result.xls')
 
 
     # select = "select * from baord where fid="+str(eachsrc[0])+" and name='"\
@@ -92,5 +92,5 @@ initsave.save('save.xls')
 
 conn.commit()
 conn.close()
-print '*'*75
-anyenter = raw_input('Check result has been saved,press Enter to quit.')
+print '*'*78
+anyenter = raw_input('Check result has been saved.Press Enter to quit.')
