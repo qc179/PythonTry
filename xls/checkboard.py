@@ -84,12 +84,6 @@ for eachsrc in srclist:
 
 initsave.save('result.xls')
 
-
-    # select = "select * from baord where fid="+str(eachsrc[0])+" and name='"\
-    # +eachsrc[1]+"' and url='"+eachsrc[2]+"' and is_active=1"
-    # print select
-
-
 conn.commit()
 conn.close()
 print '*'*78
