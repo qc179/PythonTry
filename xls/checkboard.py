@@ -79,7 +79,13 @@ for eachsrc in srclist:
     #eachsrc[0]:board name
     #eachsrc[1]:board url
     istieba = re.match('http://tieba\.baidu\.com.*',eachsrc[1])
-    if istieba:
+    nameblank = re.match('\s+(?u)\w+|(?u)\w+\s+',eachsrc[0])
+    urlblank = re.match('\s+.*|.*\s+',eachsrc[1])
+    if nameblank or urlblank:
+        isheet1.write(rows,1,eachsrc[0])
+        isheet1.write(rows,2,eachsrc[1])
+        isheet1.write(rows,4,u'Name或URL含有空格，请修改')
+    elif istieba:
         cktieba = checktieba(eachsrc[0],eachsrc[1])
         if cktieba == 9:
             isheet1.write(rows,1,eachsrc[0])
@@ -88,11 +94,11 @@ for eachsrc in srclist:
         elif cktieba == 1:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,4,u'吧名不规范，请检查')
+            isheet1.write(rows,4,u'吧名不规范，请修改')
         elif cktieba == 2:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,4,u'URL不规范，请检查')
+            isheet1.write(rows,4,u'URL不规范，请修改')
         else:
             sqltieba = "select fid,name,url,bid from board where \
             is_active=1 and fid=101 and name='"+eachsrc[0]+"' order by bid"
