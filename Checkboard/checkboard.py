@@ -45,10 +45,12 @@ isheet1.write(0,0,'Fid')
 isheet1.write(0,1,'Name')
 isheet1.write(0,2,'URL')
 isheet1.write(0,3,'Bid')
-isheet1.write(0,4,'Status')
-isheet1.write(0,5,'Count')
+isheet1.write(0,4,'Count')
+isheet1.write(0,5,'Status')
+isheet1.write(0,6,'SourceName')
 isheet1.col(2).width = 256*50
 isheet1.col(1).width = 256*15
+isheet1.col(5).width = 256*20
 
 def checktieba(tbname,tburl):
     namelen = len(tbname)
@@ -84,21 +86,21 @@ for eachsrc in srclist:
     if nameblank or urlblank:
         isheet1.write(rows,1,eachsrc[0])
         isheet1.write(rows,2,eachsrc[1])
-        isheet1.write(rows,4,u'Name或URL含有空格，请修改')
+        isheet1.write(rows,5,u'Name或URL含有空格，请修改')
     elif istieba:
         cktieba = checktieba(eachsrc[0],eachsrc[1])
         if cktieba == 9:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,4,u'判断过程中出错')
+            isheet1.write(rows,5,u'判断过程中出错')
         elif cktieba == 1:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,4,u'吧名不规范，请修改')
+            isheet1.write(rows,5,u'吧名不规范，请修改')
         elif cktieba == 2:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,4,u'URL不规范，请修改')
+            isheet1.write(rows,5,u'URL不规范，请修改')
         else:
             sqltieba = "select fid,name,url,bid from board where \
             is_active=1 and fid=101 and name='"+eachsrc[0]+"' order by bid"
@@ -107,16 +109,16 @@ for eachsrc in srclist:
             if len(anslist) == 0:
                 isheet1.write(rows,1,eachsrc[0])
                 isheet1.write(rows,2,eachsrc[1])
-                isheet1.write(rows,4,u'未配置')
-                isheet1.write(rows,5,len(anslist))
+                isheet1.write(rows,5,u'未查到这个URL')
+                isheet1.write(rows,4,len(anslist))
             else:
                 ans = anslist[0]
                 isheet1.write(rows,0,ans[0])
                 isheet1.write(rows,1,ans[1])
                 isheet1.write(rows,2,ans[2])
                 isheet1.write(rows,3,ans[3])
-                #isheet1.write(rows,4,'OK')
-                isheet1.write(rows,5,len(anslist))            
+                #isheet1.write(rows,5,'OK')
+                isheet1.write(rows,4,len(anslist))            
     else:
         sql0 = "select fid,name,url,bid from board where is_active=1 \
         and url='"+eachsrc[1]+"' order by bid"
@@ -128,22 +130,22 @@ for eachsrc in srclist:
             isheet1.write(rows,1,eachsrc[0])
             isheet1.write(rows,2,eachsrc[1])
             # isheet1.write(rows,3,'NONE')
-            isheet1.write(rows,4,u'未配置')
-            isheet1.write(rows,5,len(anslist))
+            isheet1.write(rows,5,u'未查到这个URL')
+            isheet1.write(rows,4,len(anslist))
         else:
             ans = anslist[0]
             isheet1.write(rows,0,ans[0])
             isheet1.write(rows,1,ans[1])
             isheet1.write(rows,2,ans[2])
             isheet1.write(rows,3,ans[3])
-            #isheet1.write(rows,4,'OK')
-            isheet1.write(rows,5,len(anslist))
-            isheet1.write(rows,6,eachsrc[0])
+            #isheet1.write(rows,5,'OK')
+            isheet1.write(rows,4,len(anslist))            
             unicodename=ans[1].decode('utf-8')
-            if unicodename == eachsrc[0]:
-                isheet1.write(rows,7,u'URL存在且名称相同')
+            if unicodename != eachsrc[0]:
+                isheet1.write(rows,5,u'版面已配置但名称不同')
+                isheet1.write(rows,6,eachsrc[0])
             else:
-                isheet1.write(rows,7,u'URL存在但名称不同')
+                pass
     print 'complete {}/{}.'.format(rows,len(srclist))
     rows = rows+1
 
