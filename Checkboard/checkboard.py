@@ -115,11 +115,11 @@ for eachsrc in srclist:
                 isheet1.write(rows,1,ans[1])
                 isheet1.write(rows,2,ans[2])
                 isheet1.write(rows,3,ans[3])
-                isheet1.write(rows,4,'OK')
+                #isheet1.write(rows,4,'OK')
                 isheet1.write(rows,5,len(anslist))            
     else:
         sql0 = "select fid,name,url,bid from board where is_active=1 \
-        and name~'"+eachsrc[0]+"' and url='"+eachsrc[1]+"' order by bid"
+        and url='"+eachsrc[1]+"' order by bid"
         cur.execute(sql0)
         anslist = cur.fetchall()
         #anslist:a list of select results    
@@ -136,8 +136,14 @@ for eachsrc in srclist:
             isheet1.write(rows,1,ans[1])
             isheet1.write(rows,2,ans[2])
             isheet1.write(rows,3,ans[3])
-            isheet1.write(rows,4,'OK')
+            #isheet1.write(rows,4,'OK')
             isheet1.write(rows,5,len(anslist))
+            isheet1.write(rows,6,eachsrc[0])
+            unicodename=ans[1].decode('utf-8')
+            if unicodename == eachsrc[0]:
+                isheet1.write(rows,7,u'URL存在且名称相同')
+            else:
+                isheet1.write(rows,7,u'URL存在但名称不同')
     print 'complete {}/{}.'.format(rows,len(srclist))
     rows = rows+1
 
