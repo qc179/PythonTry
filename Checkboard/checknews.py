@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-#filename:checkboard.py
+#filename:checknews.py
 
 
 import sys
@@ -28,9 +28,9 @@ except Exception,e:
     print 'Connect server failed.'
     anyenter = raw_input('Press ENTER to quit.')
 
-#make board source into a list from sheet1
-board = xlrd.open_workbook('board.xls')
-bsheet1 = board.sheets()[0]
+#make news source into a list from sheet1
+news = xlrd.open_workbook('news.xls')
+bsheet1 = news.sheets()[0]
 srclist = []
 for row in range(bsheet1.nrows)[1:]:
     values = []
@@ -38,13 +38,13 @@ for row in range(bsheet1.nrows)[1:]:
         values.append(bsheet1.cell(row,col).value)
     srclist.append(values)
 
-#init board_result.xls such as title and column width
+#init news_result.xls such as title and column width
 initsave = xlwt.Workbook(encoding='utf-8')
 isheet1 = initsave.add_sheet('sheet1')
 isheet1.write(0,0,'Fid')
 isheet1.write(0,1,'Name')
 isheet1.write(0,2,'URL')
-isheet1.write(0,3,'Bid')
+isheet1.write(0,3,'Nsid')
 isheet1.write(0,4,'Count')
 isheet1.write(0,5,'Status')
 isheet1.write(0,6,'SourceName')
@@ -53,76 +53,23 @@ isheet1.col(2).width = 256*50
 isheet1.col(5).width = 256*20
 isheet1.col(6).width = 256*15
 
-def checktieba(tbname,tburl):
-    namelen = len(tbname)
-    namelast = tbname[namelen-1]
-    urlfmt = re.match('^http://tieba\.baidu\.com/f\?kw=[A-za-z0-9%]+$',\
-                      tburl)
-    try:
-        if namelast != u'吧' :
-            a = 1
-            # tieba.write(rows,2,u'吧名不规范，请检查')
-        else :
-            if urlfmt:
-                a = 0
-                # tieba.write(rows,2,u'吧名和URL正确')
-            else:
-                a = 2
-                # tieba.write(rows,2,u'URL不规范，请检查')
-    except Exception, e:
-        a = 9
-        return a
-    return a
-
 #judge each source whether has been inserted,then save them
-print 'There are {} boards need to be checked ..'.format(len(srclist))
+print 'There are {} news need to be checked ..'.format(len(srclist))
 print '*'*78
 rows = 1
 for eachsrc in srclist:
-    #eachsrc[0]:board name
-    #eachsrc[1]:board url
+    #eachsrc[0]:news name
+    #eachsrc[1]:news url
     istieba = re.match('http://tieba\.baidu\.com.*',eachsrc[1])
     nameblank = re.match('\s+(?u)\w+|(?u)\w+\s+',eachsrc[0])
     urlblank = re.match('\s+.*|.*\s+',eachsrc[1])
     if nameblank or urlblank:
         isheet1.write(rows,1,eachsrc[0])
         isheet1.write(rows,2,eachsrc[1])
-        isheet1.write(rows,5,u'Name或URL含有空格，请修改')
-    elif istieba:
-        cktieba = checktieba(eachsrc[0],eachsrc[1])
-        if cktieba == 9:
-            isheet1.write(rows,1,eachsrc[0])
-            isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,5,u'判断过程中出错')
-        elif cktieba == 1:
-            isheet1.write(rows,1,eachsrc[0])
-            isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,5,u'吧名不规范，请修改')
-        elif cktieba == 2:
-            isheet1.write(rows,1,eachsrc[0])
-            isheet1.write(rows,2,eachsrc[1])
-            isheet1.write(rows,5,u'URL不规范，请修改')
-        else:
-            sqltieba = "select fid,name,url,bid from board where \
-            is_active=1 and fid=101 and name='"+eachsrc[0]+"' order by bid"
-            cur.execute(sqltieba)
-            anslist = cur.fetchall()   
-            if len(anslist) == 0:
-                isheet1.write(rows,1,eachsrc[0])
-                isheet1.write(rows,2,eachsrc[1])
-                isheet1.write(rows,5,u'未查到这个URL')
-                isheet1.write(rows,4,len(anslist))
-            else:
-                ans = anslist[0]
-                isheet1.write(rows,0,ans[0])
-                isheet1.write(rows,1,ans[1])
-                isheet1.write(rows,2,ans[2])
-                isheet1.write(rows,3,ans[3])
-                #isheet1.write(rows,5,'OK')
-                isheet1.write(rows,4,len(anslist))            
+        isheet1.write(rows,5,u'Name或URL含有空格，请修改')            
     else:
-        sql0 = "select fid,name,url,bid from board where is_active=1 \
-        and url='"+eachsrc[1]+"' order by bid"
+        sql0 = "select fid,name,url,nsid from news_site where is_active=1 \
+        and url='"+eachsrc[1]+"' order by nsid"
         cur.execute(sql0)
         anslist = cur.fetchall()
         #anslist:a list of select results    
@@ -150,7 +97,7 @@ for eachsrc in srclist:
     print 'complete {}/{}.'.format(rows,len(srclist))
     rows = rows+1
 
-initsave.save('board_result.xls')
+initsave.save('news_result.xls')
 
 conn.commit()
 conn.close()
