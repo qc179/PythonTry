@@ -22,7 +22,8 @@ def getMem():
         cache = int(f.readline().split()[1])
     mem_use=total-free-buffers-cache
     t = int(time.time())
-    sql = 'insert into memory (memory,time) values (%s,%s)'%(mem_use/1024,t)
+    fmtt = time.strftime('%Y-%m-%d %H:%M:%S')
+    sql = 'insert into memory (memory,time,fmt_time) values (%s,%s,\'%s\')'%(mem_use/1024,t,fmtt)
     cur.execute(sql)
 #    with open ('/var/tmp/mem.log','a')as l:
 #        l.write(time.ctime()+'\n')
@@ -31,12 +32,11 @@ def getMem():
 #        l.write('Buffers: '+str(buffers/1024)+' MB\n')
 #        l.write('Cache: '+str(cache/1024)+' MB\n')
 #        l.write('Mem_use: '+str(mem_use/1024)+' MB\n\n')
-    print mem_use/1024,'MB'
+#    print mem_use/1024,'MB'
 
 
 if __name__=='__main__':
-    i = 10
-    while i>0:
+    while True:
         conn = psycopg2.connect(
         host="127.0.0.1",
         database="yun",
@@ -49,6 +49,6 @@ if __name__=='__main__':
 
         conn.commit()
         conn.close()
-        i -= 1
-        time.sleep(5)
+
+        time.sleep(30)
 
